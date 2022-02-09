@@ -1,16 +1,45 @@
 ---
 version: "2.4"
 services:
-  ptg-ansible:
-    build:
-      context: .
-      #args:
-    image: penguintech/ubuntu-ansible
-    volumes:
-      - ptg-vars:/opt/core/vars #This will be /opt/manager/vars for standard apps
+
+  postgresql:
+    image: 'bitnami/postgresql:latest'
+    environment:
+      - POSTGRESQL_USERNAME=restyaboard
+      - POSTGRESQL_PASSWORD=p@ssword
+      - POSTGRESQL_DATABASE=restyaboard
+    ports:
+     - "5432:5432"
     networks:
-      - buildme
-volumes:
-  ptg-vars:
+      - restyacore
+
+  php-fpm:
+    image: 'bitnami/php-fpm:latest'
+    ports:
+      - "9000:9000"
+    networks:
+      - restyacore
+
+  restyacore-server:
+    build: .
+    environment:
+      - DATABASE_HOST=mariadb
+      - URL=https://127.0.0.1
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - postgresql
+      - php-fpm
+    networks:
+      - restyacore
+    restart: on-failure # Added this to give maria_db to configure for testing purposes
+    healthcheck:
+      test: ["CMD", "ansible-playbook", "upstart.yml", "--tag", "test"]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
 networks:
-  buildme:
+  restyacore:

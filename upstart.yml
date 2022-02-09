@@ -1,104 +1,122 @@
 ---
-- name: Install Ansible Host Baseline
-  hosts: all
-  become: yes
-  become_user: root
-  remote_user: root
+- name: Install Restyacore server
+  hosts: localhost
+  connection: local
   vars_files:
-    - vars/base.yml
+    - vars/prod.yml
   tasks:
-    - name: Disable problematic unattended Upgrades
+    - name: Install Restyacore Dependencies
       include_tasks:
-        file: jobs/build/disableunattended.yml
+        file: jobs/build/install_dependencies.yml
         apply:
           tags:
-            - build
-            - metal
+          - nginx
+          - php
+          - build
       tags:
-        - build
-        - metal
-    - name: Setup network interfaces
+      - nginx
+      - php
+      - build
+
+    - name: Install Restyacore
       include_tasks:
-        file: jobs/run/networking.yml
+        file: jobs/build/install_restyacore.yml
         apply:
           tags:
-            - interface
-            - build
-            - metal
+          - restyacore
+          - build
       tags:
-        - interface
+        - restyacore
         - build
-        - metal
-    - name: Setup DNS
+
+    - name: Generate SSL certificate
       include_tasks:
-        file: jobs/build/dns.yml
+        file: jobs/run/ssl_generate.yml
         apply:
           tags:
-            - dns
-            - build
-            - metal
+          - sslcertificate
+          - run
       tags:
-        - dns
-        - build
-        - metal
-    - name: Install container libraries
-      include_tasks: 
-        file: jobs/build/installlibraries.yml
-        apply:
-          tags:
-            - build
-      tags:
-        - build
-    - name: Update container libraries
-      include_tasks: 
-        file: jobs/run/update.yml
-        apply:
-          tags:
-            - always
-            - update
-      tags:
-        - always
-        - update
-    - name: Enable kernel Mods
+      - sslcertificate
+      - run
+
+    - name: Configure NGINX
       include_tasks:
-        file: jobs/build/kernelmods.yml
+        file: jobs/run/config_nginx.yml
         apply:
           tags:
-            - build
-            - metal
+          - nginx
+          - run
       tags:
-        - build
-        - metal
-      when: kmod
-    - name: Setup twice daily updates via crontab
+      - nginx
+      - run
+
+    - name: Run nginx
       include_tasks:
-        file: jobs/build/autoupdate.yml
+        file: jobs/run/nginx.yml
         apply:
           tags:
-            - build
+            - nginx
+            - run
       tags:
-        - build
-    - name: Install Docker
+        - nginx
+        - run
+
+    - name: Test database connectivity
       include_tasks:
-        file: jobs/build/docker.yml
+        file: jobs/tests/database_test.yml
         apply:
           tags:
-            - metal
-            - build
+          - database
+          - test
+          - run
       tags:
-        - docker
-        - build
-      when: docker
-    - name: Install User
+      - database
+      - test
+      - run
+
+#    - name: Configure nextcloud for start up
+#      include_tasks:
+#        file: jobs/run/config_nextcloud.yml
+#        apply:
+#          tags:
+#          - config-nextcloud
+#          - run
+#      tags:
+#      - config_nextcloud
+#      - run
+
+    - name: Test Nginx
       include_tasks:
-        file: jobs/build/user.yml
+        file: jobs/tests/test_nginx.yml
         apply:
           tags:
-            - build
+          - nginx
+          - test
+          - run
       tags:
-        - build
-      when: docker
-    - name: Exec bash
-      shell: bash
+      - nginx
+      - test
+      - run
+
+#    - name: Test URL
+#      include_tasks:
+#        file: jobs/tests/nextcloud_test.yml
+#        apply:
+#          tags:
+#            - url
+#            - test
+#            - run
+#      tags:
+#        - url
+#        - test
+#        - run
+
+    - name: Execute NGINX
+      include_tasks:
+        file: jobs/exec/nginx.yml
+        apply:
+          tags:
+          - exec
       tags:
-        - exec
+      - exec

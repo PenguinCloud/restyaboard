@@ -1,0 +1,6 @@
+---
+- name: Download and extract Restyaboard
+  ansible.builtin.unarchive:
+    src: https://github.com/RestyaPlatform/board/releases/download/v1.7/board-v1.7.zip
+    dest: /opt/
+    remote_src: yes
