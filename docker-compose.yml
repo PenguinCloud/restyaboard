@@ -5,9 +5,9 @@ services:
   postgresql:
     image: 'bitnami/postgresql:latest'
     environment:
-      - POSTGRESQL_USERNAME=restyaboard
+      - POSTGRESQL_USERNAME=restyacore
       - POSTGRESQL_PASSWORD=p@ssword
-      - POSTGRESQL_DATABASE=restyaboard
+      - POSTGRESQL_DATABASE=restyacore
     ports:
      - "5432:5432"
     networks:
@@ -23,7 +23,7 @@ services:
   restyacore-server:
     build: .
     environment:
-      - DATABASE_HOST=mariadb
+      - DATABASE_HOST=postgresql
       - URL=https://127.0.0.1
     ports:
       - "80:80"

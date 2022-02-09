@@ -40,16 +40,16 @@
       - sslcertificate
       - run
 
-    - name: Configure NGINX
-      include_tasks:
-        file: jobs/run/config_nginx.yml
-        apply:
-          tags:
-          - nginx
-          - run
-      tags:
-      - nginx
-      - run
+#    - name: Configure NGINX
+#      include_tasks:
+#        file: jobs/run/config_nginx.yml
+#        apply:
+#          tags:
+#          - nginx
+#          - run
+#      tags:
+#      - nginx
+#      - run
 
     - name: Run nginx
       include_tasks:
@@ -88,7 +88,7 @@
 
     - name: Test Nginx
       include_tasks:
-        file: jobs/tests/test_nginx.yml
+        file: jobs/tests/nginx_test.yml
         apply:
           tags:
           - nginx

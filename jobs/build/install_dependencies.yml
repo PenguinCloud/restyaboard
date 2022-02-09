@@ -9,6 +9,6 @@
     - php-imap
     - jq
     - python-openssl
-    - python3-pymysql
+    - python3-psycopg2
     state: latest
     update_cache: yes
