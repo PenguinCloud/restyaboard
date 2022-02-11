@@ -1,6 +1,11 @@
 ---
-- name: Download and extract Restyaboard
+- name: Create Restyacore repo
+  ansible.builtin.file:
+    path: /opt/restyacore
+    state: directory
+
+- name: Download and extract Restyacore
   ansible.builtin.unarchive:
     src: https://github.com/RestyaPlatform/board/releases/download/v1.7/board-v1.7.zip
-    dest: /opt/
+    dest: /opt/restyacore
     remote_src: yes
