@@ -16,6 +16,11 @@ admin:
   logging: "{{ lookup('env', 'ADMIN_LOGGING') }}"
   password: "{{ lookup('env', 'ADMIN_PASS') }}"
 
+ssl_key: "{{ lookup('env', 'SSL_KEY') }}"
+ssl_cert: "{{ lookup('env', 'SSL_CERTIFICATE') }}"
+
+
+
 url: "{{ lookup('env', 'URL') }}"
 
 trusted_domain:  "{{ lookup('env', 'TRUSTED_DOMAIN') }}"
