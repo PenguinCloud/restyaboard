@@ -1,32 +1,21 @@
-FROM ubuntu
-LABEL maintainer="Penguin Technologies Group LLC"
-
-# Set ENV variables
-ARG TZ=America/Chicago
-ENV TZ=America/Chicago
-ARG DNS="1.1.1.1"
-ENV PUBLIC_INTERFACE="enp1s0"
-ENV INTERNAL_INTERFACE="enp6s0"
-ARG KERNEL_MODS="no"
-ARG DOCKER="no"
-ARG CRON_UPDATE="yes"
-ENV IP_PRIVATE="10.0.0.1/24"
-ARG IP_PRIVATE="10.0.0.1/24"
-# Set Timezone
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-# Make Dirs
-RUN mkdir -p /etc/ansible /root/.kube /etc/sshd
-# Copy Files
-COPY . /opt/core
-COPY configs/hosts.yml /etc/ansible/hosts
-# Move to working Directory
-WORKDIR /opt/core
-# Install Core Components
-RUN apt-get update && apt-get install -y python3 python3-pip python3-apt openssh-client && apt-get clean
-RUN pip3 install ansible lxml  &&  ansible-galaxy collection install community.general
-# setup Ansible config
-RUN echo "[defaults]" > /etc/ansible/ansible.cfg && echo "host_key_checking = False" >> /etc/ansible/ansible.cfg
-# Build backdrop
-RUN ansible-playbook /opt/core/upstart.yml --connection=local --skip-tags "metal,run,exec"
-# Run and Execute live
-ENTRYPOINT ["ansible-playbook","/opt/core/upstart.yml","--connection=local", "--tags=run,exec"]
+FROM penguintech/core-ansible
+LABEL maintainer="Penguinz Tech Group LLC"
+COPY . /opt/manager/
+ENV DATABASE_NAME="restyaboard"
+ENV DATABASE_USER="restyaboard"
+ENV DATABASE_PASSWORD="p@ssword"
+ENV DATABASE_HOST="localhost"
+ENV DATABASE_PORT="5432"
+ENV ORGANIZATION_NAME="name"
+ENV ORGANIZATION_COUNTRY="US"
+ENV ORGANIZATION_EMAIL="admin@localhost"
+ENV ORGANISATION_HOSTNAME="ptg.org"
+ENV URL="https://127.0.0.1"
+ENV CPU_COUNT="2"
+ENV FILE_LIMIT="1042"
+ENV SSL_KEY="nokey"
+ENV SSL_CERTIFICATE="nocert"
+RUN ansible-playbook /opt/manager/upstart.yml -c local --tags build
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+	&& ln -sf /dev/stderr /var/log/nginx/error.log
+ENTRYPOINT ["ansible-playbook", "/opt/manager/upstart.yml", "-c", "local", "--tags", "run,exec"]
