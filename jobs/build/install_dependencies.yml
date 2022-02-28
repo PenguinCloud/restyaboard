@@ -13,5 +13,3 @@
     - python3-psycopg2
     state: latest
     update_cache: yes
-
-    # : nginx, php-fpm (with mbstring, ImageMagick and IMAP), PostgreSQL, GeoIP and jq

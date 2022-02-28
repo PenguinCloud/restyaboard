@@ -1,11 +1,11 @@
 ---
-- name: Install Restyacore server
+- name: Install Restyaboard server
   hosts: localhost
   connection: local
   vars_files:
     - vars/prod.yml
   tasks:
-    - name: Install Restyacore Dependencies
+    - name: Install Restyaboard Dependencies
       include_tasks:
         file: jobs/build/install_dependencies.yml
         apply:
@@ -18,15 +18,15 @@
       - php
       - build
 
-    - name: Install Restyacore
+    - name: Install Restyaboard
       include_tasks:
-        file: jobs/build/install_restyacore.yml
+        file: jobs/build/install_restyaboard.yml
         apply:
           tags:
-          - restyacore
+          - restyaboard
           - build
       tags:
-        - restyacore
+        - restyaboard
         - build
 
     - name: Generate SSL certificate
@@ -40,16 +40,16 @@
       - sslcertificate
       - run
 
-#    - name: Configure NGINX
-#      include_tasks:
-#        file: jobs/run/config_nginx.yml
-#        apply:
-#          tags:
-#          - nginx
-#          - run
-#      tags:
-#      - nginx
-#      - run
+    - name: Configure NGINX
+      include_tasks:
+        file: jobs/run/config_nginx.yml
+        apply:
+          tags:
+          - nginx
+          - run
+      tags:
+      - nginx
+      - run
 
     - name: Run nginx
       include_tasks:
@@ -61,6 +61,17 @@
       tags:
         - nginx
         - run
+
+    - name: Configure restyaboard
+      include_tasks:
+        file: jobs/run/restyaboard_config.yml
+        apply:
+          tags:
+          - config-restyaboard
+          - run
+      tags:
+      - config_restyaboard
+      - run
 
     - name: Test database connectivity
       include_tasks:
@@ -75,17 +86,6 @@
       - test
       - run
 
-#    - name: Configure nextcloud for start up
-#      include_tasks:
-#        file: jobs/run/config_nextcloud.yml
-#        apply:
-#          tags:
-#          - config-nextcloud
-#          - run
-#      tags:
-#      - config_nextcloud
-#      - run
-
     - name: Test Nginx
       include_tasks:
         file: jobs/tests/nginx_test.yml
@@ -99,18 +99,18 @@
       - test
       - run
 
-#    - name: Test URL
-#      include_tasks:
-#        file: jobs/tests/nextcloud_test.yml
-#        apply:
-#          tags:
-#            - url
-#            - test
-#            - run
-#      tags:
-#        - url
-#        - test
-#        - run
+    - name: Test URL
+      include_tasks:
+        file: jobs/tests/url_test.yml
+        apply:
+          tags:
+            - url
+            - test
+            - run
+      tags:
+        - url
+        - test
+        - run
 
     - name: Execute NGINX
       include_tasks:

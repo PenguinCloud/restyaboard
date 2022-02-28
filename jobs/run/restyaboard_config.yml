@@ -1,0 +1,6 @@
+---
+- name: Configure Restyaboard
+  template:
+    src: templates/restyaboard_config.j2
+    dest: /opt/restyaboard/server/php/config.inc.php
+    force: yes

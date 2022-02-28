@@ -1,8 +1,4 @@
-# Environment setup
-Runs basic environment prepartion scripts and playbooks so you only have to work about your app.
-
-## Tags
-Tags can be used to control behavior!
-* environ - setup just the environment (update, install ppa, etc.)
+#Restyaboard
+The Kanban board alternative
 ## License and Distribution
 This playbook is owned entirely by Penguinz Media Group LLC and is not meant for distribution outside of contractual agreement.
