@@ -1,4 +1,19 @@
 ---
+- name: Install Dependencies
+  apt:
+    pkg:
+    - nginx-core
+    - php
+    - php-mbstring
+    - imagemagick
+    - php-imap
+    - jq
+    - geoip-database
+    - python-openssl
+    - python3-psycopg2
+    state: latest
+    update_cache: yes
+
 - name: Create Restyaboard repo
   ansible.builtin.file:
     path: /opt/restyaboard
@@ -9,3 +24,5 @@
     src: https://github.com/RestyaPlatform/board/releases/download/v1.7/board-v1.7.zip
     dest: /opt/restyaboard
     remote_src: yes
+
+
