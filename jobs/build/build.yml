@@ -21,7 +21,7 @@
 
 - name: Download and extract Restyaboard
   ansible.builtin.unarchive:
-    src: "{{ APP_LINK }}"
+    src: "{{ app_link }}"
     dest: /opt/restyaboard
     remote_src: yes
 
