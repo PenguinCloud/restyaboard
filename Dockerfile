@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:jammy
 LABEL maintainer="Penguin Technologies Group LLC"
 
 # Set ENV variables
